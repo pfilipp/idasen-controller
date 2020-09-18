@@ -1,7 +1,7 @@
 {
   "name": "idasen-controller",
   "version": "1.0.0",
-  "description": "",
+  "description": "Package wrapping simple controls of Idasen IKEA desk.",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "url": "git+https://github.com/pfilipp/idasen-controller.git"
   },
   "author": "Piotr Filipp",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/pfilipp/idasen-controller/issues"
   },
