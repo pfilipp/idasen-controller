@@ -1,6 +1,6 @@
 import noble from '@abandonware/noble';
 import {CHARACTERISTICS} from './desk-constants';
-import  {STATES, ADAPTER_EVENTS, PERIPHERAL_EVENTS} from './noble-constants';
+import {STATES, ADAPTER_EVENTS, PERIPHERAL_EVENTS} from './noble-constants';
 import {Desk} from './desk';
 import {sleep} from './helpers'
 
@@ -25,7 +25,6 @@ class DeskManager{
   }
 
   scan = async () => {
-    console.log('scan started');
     this.state = managerStateEnum.SCANNING;
     try{
       await noble.startScanningAsync([], true);
@@ -44,7 +43,6 @@ class DeskManager{
   connect = async (address) => {
     this.deskAddress = address;
     this.state = managerStateEnum.CONNECTING;
-    console.log(address);
     await noble.startScanningAsync([], true);
     await sleep(1000); // FIXME: convert to promise
     const result = this.desk

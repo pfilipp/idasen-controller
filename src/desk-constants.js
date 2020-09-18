@@ -24,6 +24,3 @@ export const CHARACTERISTICS = {
   moveTo: new UUIDWrapper('99FA0031-338A-1024-8A49-009C0215F78A'),
   height: new UUIDWrapper('99FA0021-338A-1024-8A49-009C0215F78A')
 }
-
-export const SIT = 75;
-export const STAND = 118;
