@@ -1,6 +1,6 @@
 {
   "name": "idasen-controller",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Package wrapping simple controls of Idasen IKEA desk.",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
