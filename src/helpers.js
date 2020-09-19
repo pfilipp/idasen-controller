@@ -1,9 +1,5 @@
 import { CHARACTERISTICS } from './desk-constants';
 
-export const sleep = (ms) => {
-  return new Promise(resolve => setTimeout(resolve, ms));
-};
-
 class DeskHelpers {
   getHeightCharacteristic = (characteristics) => {
     return this.getCharacteristicByUUID(characteristics, CHARACTERISTICS.height.uuidNoDashesLowCase);
@@ -36,6 +32,10 @@ class DeskHelpers {
     if (currentItems.some((item) => item.uuid === itemToPush.uuid)) return false;
     return true;
   }
+
+  sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  };
 };
 
 export const deskHelpers = new DeskHelpers();

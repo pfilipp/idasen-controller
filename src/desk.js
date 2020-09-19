@@ -1,6 +1,6 @@
 import { CODES } from './desk-constants';
 import { heightConverter } from './height-converter';
-import { sleep } from './helpers';
+import { deskHelpers } from './helpers';
 
 const BufferFrom = Buffer.from;
 
@@ -37,7 +37,7 @@ export class Desk {
 
   preflightRequestAsync = async () => {
     await this.moveCharacteristic.writeAsync(new BufferFrom(CODES.preflight, 'hex'), false);
-    await sleep(this.preflightTimeDuration || PREFLIGHT_TIME_DURATION);
+    await deskHelpers.sleep(this.preflightTimeDuration || PREFLIGHT_TIME_DURATION);
   }
 
   moveToAsync = async (requestedHeight) => {
