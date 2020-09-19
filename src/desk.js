@@ -4,6 +4,9 @@ import { sleep } from './helpers';
 
 const BufferFrom = Buffer.from;
 
+const PREFLIGHT_TIME_DURATION = 100;
+const MOVE_TIME_DURATION = 500;
+
 export class Desk {
   constructor (peripheral) {
     this.peripheral = peripheral;
@@ -20,19 +23,23 @@ export class Desk {
 
   moveUp = async () => {
     await this.moveCharacteristic.writeAsync(new BufferFrom(CODES.up, 'hex'), false);
+    // TODO: add check for speed to resolve?
   }
 
   moveDown = async () => {
     await this.moveCharacteristic.writeAsync(new BufferFrom(CODES.down, 'hex'), false);
+    // TODO: add check for speed to resolve?
   }
 
   preflightRequest = async () => {
+    console.log('starting preflight');
     await this.moveCharacteristic.writeAsync(new BufferFrom(CODES.preflight, 'hex'), false);
-    await sleep(100);
+    await sleep(PREFLIGHT_TIME_DURATION);
+    console.log('ending preflight');
   }
 
   moveTo = async (requestedHeight) => {
-    const isMovingUp = await this.getCurrentHeight() > requestedHeight;
+    const isMovingUp = await this.getCurrentHeightAsync() > requestedHeight;
     const requestedHeightHex = heightConverter
       .getHexRepresentation(heightConverter
         .getAbsoluteHeight(heightConverter
@@ -46,14 +53,14 @@ export class Desk {
     return new Promise(async (resolve, reject) => {
       await this.preflightRequest();
       this.moveToIntervalId = setInterval(async () => {
-        const currentHeight = await this.getCurrentHeight();
-        console.log({ currentHeight });
+        const currentHeight = await this.getCurrentHeightAsync();
         if (shouldStopMoving(currentHeight, requestedHeight)) {
           clearInterval(this.moveToIntervalId);
           resolve();
         }
+        console.log('start moving');
         this.move(requestedHeightHex);
-      }, 500);
+      }, MOVE_TIME_DURATION);
     });
   }
 
@@ -67,12 +74,12 @@ export class Desk {
     await this.moveToCharacteristic.writeAsync(heightForTransmission, false);
   }
 
-  getCurrentHeightBuffer = async () => {
-    return await this.heightCharacteristic.readAsync();
+  getCurrentHeightBufferAsync = () => {
+    return this.heightCharacteristic.readAsync();
   }
 
-  getCurrentHeight = async () => {
-    const heightInBytes = await this.getCurrentHeightBuffer();
+  getCurrentHeightAsync = async () => {
+    const heightInBytes = await this.getCurrentHeightBufferAsync();
     const rawHeight = heightConverter.getAbsoluteHeightFromBuffer(heightInBytes);
     const height = heightConverter
       .toCentimeters(heightConverter

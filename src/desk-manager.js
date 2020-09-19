@@ -1,8 +1,7 @@
 import noble from '@abandonware/noble';
-import { CHARACTERISTICS } from './desk-constants';
-import { STATES, ADAPTER_EVENTS, PERIPHERAL_EVENTS } from './noble-constants';
+import { STATES, ADAPTER_EVENTS } from './noble-constants';
 import { Desk } from './desk';
-import { sleep } from './helpers';
+import { deskHelpers } from './helpers';
 
 const managerStateEnum = {
   SCANNING: 'scanning',
@@ -10,71 +9,60 @@ const managerStateEnum = {
   IDLE: 'idle'
 };
 
+const SCANNING_TIME_DURATION = 4000;
+
 class DeskManager {
   constructor () {
     this.desk = null;
     this.deskAddress = null;
     this.discoveredPeripherals = [];
-    this.isNobleReady = false;
     this.state = managerStateEnum.IDLE;
-  }
 
-  init = () => {
     this.setOnStateChangeHandler();
     this.setOnDiscoverHandler();
+    this.isNobleReady = new Promise((resolve, reject) => {
+      this.nobleReadyPromiseResolve = resolve;
+    });
+    this.isDeskReady = new Promise((resolve, reject) => {
+      this.deskReadyPromiseResolve = resolve;
+    });
   }
 
-  scan = async () => {
+  scanAsync = async () => {
+    await this.isNobleReady;
     this.state = managerStateEnum.SCANNING;
     try {
-      await noble.startScanningAsync([], true);
+      noble.startScanningAsync([], true);
       return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-          await noble.stopScanningAsync();
+        setTimeout(() => {
+          noble.stopScanningAsync();
           this.state = managerStateEnum.IDLE;
           resolve(this.discoveredPeripherals);
-        }, 4000);
+        }, SCANNING_TIME_DURATION);
       });
     } catch (error) {
       return ({ message: 'Unable to scan.' });
     }
   }
 
-  connect = async (address) => {
+  connectAsync = async (address) => {
     this.deskAddress = address;
     this.state = managerStateEnum.CONNECTING;
     await noble.startScanningAsync([], true);
-    await sleep(1000); // FIXME: convert to promise
+    await this.isDeskReady;
     const result = this.desk
       ? 'success'
       : 'failure';
+
     this.state = managerStateEnum.IDLE;
     return result;
   }
 
-  disconnect = async () => {
-    this.deskAddress = null;
+  disconnectAsync = async () => {
     await this.disconnect();
+    this.deskAddress = null;
     this.desk = null;
     return 'success';
-  }
-
-  getHeightCharacteristic = (characteristics) => {
-    return this.getCharacteristicByUUID(characteristics, CHARACTERISTICS.height.uuidNoDashesLowCase);
-  }
-
-  getMoveCharacteristic = (characteristics) => {
-    return this.getCharacteristicByUUID(characteristics, CHARACTERISTICS.move.uuidNoDashesLowCase);
-  }
-
-  getMoveToCharacteristic = (characteristics) => {
-    return this.getCharacteristicByUUID(characteristics, CHARACTERISTICS.moveTo.uuidNoDashesLowCase);
-  }
-
-  getCharacteristicByUUID = (characteristics, uuid) => {
-    return characteristics.find((characteristic) => {
-      return characteristic.uuid === uuid;
-    });
   }
 
   getCharacteristics = async (desk) => {
@@ -82,25 +70,11 @@ class DeskManager {
     return characteristics;
   }
 
-  createSimplePeripheral = (peripheral) => {
-    return {
-      name: peripheral.advertisement.localName,
-      address: peripheral.address,
-      uuid: peripheral.uuid
-    };
-  }
-
-  shouldPush = (currentItems, itemToPush) => {
-    if (!itemToPush.advertisement.localName) return false;
-    if (currentItems.some((item) => item.uuid === itemToPush.uuid)) return false;
-    return true;
-  }
-
   setOnStateChangeHandler = () => {
     noble.on(ADAPTER_EVENTS.STATE_CHANGE, async (state) => {
       switch (state) {
         case STATES.POWERED_ON:
-          this.isNobleReady = true;
+          this.nobleReadyPromiseResolve();
       }
     });
   }
@@ -109,7 +83,7 @@ class DeskManager {
     noble.on(ADAPTER_EVENTS.DISCOVER, async (peripheral) => {
       switch (this.state) {
         case managerStateEnum.CONNECTING:
-          await this.handleConnecting(peripheral);
+          this.handleConnecting(peripheral);
           break;
         case managerStateEnum.SCANNING:
           this.handleScanning(peripheral);
@@ -121,35 +95,32 @@ class DeskManager {
   }
 
   handleScanning = (peripheral) => {
-    if (this.shouldPush(this.discoveredPeripherals, peripheral)) {
+    if (deskHelpers.shouldPush(this.discoveredPeripherals, peripheral)) {
       this.discoveredPeripherals
-        .push(this.createSimplePeripheral(peripheral));
+        .push(deskHelpers.createSimplePeripheral(peripheral));
     };
   }
 
   handleConnecting = async (peripheral) => {
     if (peripheral.address === this.deskAddress) {
-      await noble.stopScanningAsync();
+      noble.stopScanningAsync();
 
       this.desk = new Desk(peripheral);
-      this.setOnConnectHandler(this.desk);
-      this.desk.peripheral.connectAsync();
+      await this.desk.peripheral.connectAsync();
+
+      const characteristics = await this.getCharacteristics(this.desk.peripheral);
+      this.setCharacteristics(this.desk, characteristics);
+      this.deskReadyPromiseResolve();
 
       this.state = managerStateEnum.IDLE;
     }
   }
 
-  setOnConnectHandler = (desk) => {
-    desk.peripheral.once(PERIPHERAL_EVENTS.CONNECT, async () => {
-      const characteristics = await this.getCharacteristics(desk.peripheral);
-      this.setCharacteristics(desk, characteristics);
-    });
-  }
-
   setCharacteristics = (desk, characteristics) => {
-    desk.setCharacteristic('moveCharacteristic', this.getMoveCharacteristic(characteristics));
-    desk.setCharacteristic('heightCharacteristic', this.getHeightCharacteristic(characteristics));
-    desk.setCharacteristic('moveToCharacteristic', this.getMoveToCharacteristic(characteristics));
+    console.log('settings characteristics');
+    desk.setCharacteristic('moveCharacteristic', deskHelpers.getMoveCharacteristic(characteristics));
+    desk.setCharacteristic('heightCharacteristic', deskHelpers.getHeightCharacteristic(characteristics));
+    desk.setCharacteristic('moveToCharacteristic', deskHelpers.getMoveToCharacteristic(characteristics));
   }
 
   disconnect = async () => {
