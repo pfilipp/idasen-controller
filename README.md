@@ -107,6 +107,16 @@ Ow and remember to disconnect ;)
 await deskManager.disconnectAsync();
 ```
 
+### *EXPERIMENTAL* Custom preflight duration
+As described below in implementation details there is a preflight request send before sending actual request to move desk. This request takes some time to be processed by the desk and won't accept move request till then. 
+By default I set it to wait for 200ms but your case may differ so you can increase (or decrease) this duration.
+
+```javascript
+const customPreflightDuration = 500 // 0.5 second
+
+await deskManager.desk.setCustomPreflight(customPreflightDuration);
+```
+
 ## Compatibility
 This solution was developed and tested on Mac Mini 2018 running macOS Catalina (10.15.6).
 
