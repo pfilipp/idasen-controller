@@ -1,17 +1,17 @@
 import noble from '@abandonware/noble';
-import {CHARACTERISTICS} from './desk-constants';
-import {STATES, ADAPTER_EVENTS, PERIPHERAL_EVENTS} from './noble-constants';
-import {Desk} from './desk';
-import {sleep} from './helpers'
+import { CHARACTERISTICS } from './desk-constants';
+import { STATES, ADAPTER_EVENTS, PERIPHERAL_EVENTS } from './noble-constants';
+import { Desk } from './desk';
+import { sleep } from './helpers';
 
 const managerStateEnum = {
   SCANNING: 'scanning',
   CONNECTING: 'connecting',
-  IDLE: 'idle',
-}
+  IDLE: 'idle'
+};
 
-class DeskManager{
-  constructor(){
+class DeskManager {
+  constructor () {
     this.desk = null;
     this.deskAddress = null;
     this.discoveredPeripherals = [];
@@ -26,7 +26,7 @@ class DeskManager{
 
   scan = async () => {
     this.state = managerStateEnum.SCANNING;
-    try{
+    try {
       await noble.startScanningAsync([], true);
       return new Promise((resolve, reject) => {
         setTimeout(async () => {
@@ -35,8 +35,8 @@ class DeskManager{
           resolve(this.discoveredPeripherals);
         }, 4000);
       });
-    } catch(error){
-      return({message: 'Unable to scan.'});
+    } catch (error) {
+      return ({ message: 'Unable to scan.' });
     }
   }
 
@@ -78,7 +78,7 @@ class DeskManager{
   }
 
   getCharacteristics = async (desk) => {
-    const {characteristics} = await desk.discoverAllServicesAndCharacteristicsAsync();
+    const { characteristics } = await desk.discoverAllServicesAndCharacteristicsAsync();
     return characteristics;
   }
 
@@ -86,19 +86,19 @@ class DeskManager{
     return {
       name: peripheral.advertisement.localName,
       address: peripheral.address,
-      uuid: peripheral.uuid,
-    }
+      uuid: peripheral.uuid
+    };
   }
 
   shouldPush = (currentItems, itemToPush) => {
-    if(!itemToPush.advertisement.localName) return false;
-    if(currentItems.some((item) => item.uuid === itemToPush.uuid)) return false;
+    if (!itemToPush.advertisement.localName) return false;
+    if (currentItems.some((item) => item.uuid === itemToPush.uuid)) return false;
     return true;
   }
 
   setOnStateChangeHandler = () => {
     noble.on(ADAPTER_EVENTS.STATE_CHANGE, async (state) => {
-      switch (state){
+      switch (state) {
         case STATES.POWERED_ON:
           this.isNobleReady = true;
       }
@@ -107,7 +107,7 @@ class DeskManager{
 
   setOnDiscoverHandler = () => {
     noble.on(ADAPTER_EVENTS.DISCOVER, async (peripheral) => {
-      switch(this.state){
+      switch (this.state) {
         case managerStateEnum.CONNECTING:
           await this.handleConnecting(peripheral);
           break;
@@ -116,25 +116,25 @@ class DeskManager{
           break;
         default:
           break;
-        }
+      }
     });
   }
-  
-  handleScanning(peripheral) {
+
+  handleScanning = (peripheral) => {
     if (this.shouldPush(this.discoveredPeripherals, peripheral)) {
       this.discoveredPeripherals
         .push(this.createSimplePeripheral(peripheral));
     };
   }
 
-  async handleConnecting(peripheral) {
+  handleConnecting = async (peripheral) => {
     if (peripheral.address === this.deskAddress) {
       await noble.stopScanningAsync();
-      
+
       this.desk = new Desk(peripheral);
       this.setOnConnectHandler(this.desk);
       this.desk.peripheral.connectAsync();
-      
+
       this.state = managerStateEnum.IDLE;
     }
   }
@@ -147,17 +147,16 @@ class DeskManager{
   }
 
   setCharacteristics = (desk, characteristics) => {
-    desk.setCharacteristic('moveCharacteristic', this.getMoveCharacteristic(characteristics))
-    desk.setCharacteristic('heightCharacteristic', this.getHeightCharacteristic(characteristics))
-    desk.setCharacteristic('moveToCharacteristic', this.getMoveToCharacteristic(characteristics))
+    desk.setCharacteristic('moveCharacteristic', this.getMoveCharacteristic(characteristics));
+    desk.setCharacteristic('heightCharacteristic', this.getHeightCharacteristic(characteristics));
+    desk.setCharacteristic('moveToCharacteristic', this.getMoveToCharacteristic(characteristics));
   }
 
   disconnect = async () => {
-    if(this.desk){
+    if (this.desk) {
       await this.desk.disconnect();
     }
   }
-
 };
 
 export const deskManager = new DeskManager();

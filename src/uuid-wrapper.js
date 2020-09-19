@@ -1,17 +1,17 @@
 export class UUIDWrapper {
-  constructor(uuid){
+  constructor (uuid) {
     this._uuid = uuid;
   }
 
-  get uuid(){
+  get uuid () {
     return this._uuid;
   }
 
-  get  uuidNoDashes(){
+  get uuidNoDashes () {
     return this.uuid.replace(/-/g, '');
   }
 
-  get uuidNoDashesLowCase(){
+  get uuidNoDashesLowCase () {
     return this.uuidNoDashes.toLowerCase();
   }
 }

@@ -2,34 +2,37 @@
   "name": "idasen-controller",
   "version": "1.0.3",
   "description": "Package wrapping simple controls of Idasen IKEA desk.",
+  "author": "Piotr Filipp",
+  "license": "MIT",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
   "scripts": {
+    "build": "rollup -c ./rollup.config.js",
+    "dev": "rollup -w -c ./rollup.config.js",
     "test": "jest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pfilipp/idasen-controller.git"
   },
-  "author": "Piotr Filipp",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/pfilipp/idasen-controller/issues"
   },
   "homepage": "https://github.com/pfilipp/idasen-controller#readme",
   "devDependencies": {
-    "@babel/core": "^7.11.6",
-    "@babel/plugin-proposal-class-properties": "^7.10.4",
-    "@babel/plugin-transform-runtime": "^7.11.5",
-    "@babel/runtime": "^7.11.2",
-    "@rollup/plugin-babel": "^5.2.1",
     "@rollup/plugin-commonjs": "^15.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@types/jest": "^26.0.14",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
-    "eslint": "^7.9.0",
     "jest": "^26.4.2",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.9.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
     "rollup-plugin-peer-deps-external": "^2.2.3"
   },
   "dependencies": {

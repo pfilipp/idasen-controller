@@ -1,5 +1,5 @@
-import {RAW_MAX_HEIGHT, DESK_OFFSET} from "./desk-constants"
-import {heightConverter} from "./height-converter"
+import { RAW_MAX_HEIGHT, DESK_OFFSET } from './desk-constants';
+import { heightConverter } from './height-converter';
 
 describe('HeightConverter', () => {
   it('should return absolute height', () => {
