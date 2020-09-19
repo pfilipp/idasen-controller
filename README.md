@@ -25,40 +25,24 @@ yarn add idasen-controller
 ```
 
 ## Usage
-Disclaimer: This is currently work in progress.
-This package was created while working on rest api service to controll desk therefore I didn't notice issues with async behaviour until writing the below example. 
-With that said in the future there should be no need for manual timeouts and simple `await` or `.then()` should do the trick. Also if you write something like a REST Api you probably won't notice ;) 
+Once you import idasenController you will find `deskManager` within.
 
 ```javascript
 import idasenController from 'idasen-controller';
 
 const { deskManager } = idasenController;
 
-await deskManager.init();
+const devices = await deskManager.scanAsync();
+const deskDevice = devices.find((device) => device.name.includes('Desk');
 
-setTimeout( async ()=> {
-  const devices = await deskManager.scan();
-  const deskDevice = devices.find((device) => {
-    return device.name.includes('Desk');
-  });
-  await deskManager.connect(deskDevice.address);
-  setTimeout(() => {
-    deskManager.desk.moveUp();
-  });
-}, 500);
+await deskManager.connectAsync(deskDevice.address);
+await deskManager.desk.moveToAsync(80);
+await deskManager.desk.moveToAsync(75);
+
+await deskManager.disconnectAsync(deskManager.desk);
 ```
 
 ## API
-
-### Init
-After importing the idasenController you need to init it. It will be deprecated in the future and should happen automatically
-
-```javascript
-import idasenController from 'idasen-controller';
-const { deskManager } = idasenController;
-
-await deskManager.init();
-```
 
 ### Scanning
 Scanning returns an array of discovered devices in simplified form containing 
@@ -71,18 +55,16 @@ Scanning returns an array of discovered devices in simplified form containing
 ```
 
 ```javascript
-const devices = deskManager.scan();
+const devices = deskManager.scanAsync();
 ```
 
 ### Connecting
 Once we have dicovered devices we need to find the one that represents our Desk. Usually it will have 'Desk' in name.
 
 ```javascript
-const deskDevice = devices.find((device) => {
-  return device.name.includes('Desk');
-});
+const deskDevice = devices.find((device) => device.name.includes('Desk')
 
-await deskManager.connect(deskDevice.address);
+await deskManager.connectAsync(deskDevice.address);
 ```
 
 Once connected we can start communication with desk and send move commands as well as request for current height.
@@ -91,30 +73,38 @@ Once connected we can start communication with desk and send move commands as we
 #### Moving one step up/down
 
 ```javascript
-await deskManager.desk.moveUp();
+await deskManager.desk.moveUpAsync();
 ```
 
 ```javascript
-await deskManager.desk.moveDown();
+await deskManager.desk.moveDownAsync();
 ```
 
 #### Moving to particular height
 The function accepts regular decimal value in centimeters and will move until particular height is reached or stop command is executed.
 
 ```javascript
-await deskManager.desk.moveTo(100);
+await deskManager.desk.moveToAsync(100);
 ```
 
 #### Stop moving
 
 ```javascript
-await deskManager.desk.stop();
+await deskManager.desk.stopAsync();
 ```
 
 ### Get height
 Return current height in centimeters
+
 ```javascript
-const currentHeight = await deskManager.desk.getCurrentHeight();
+const currentHeight = await deskManager.desk.getCurrentHeightAsync();
+```
+
+### Disconnect
+Ow and remember to disconnect ;)
+
+```javascript
+await deskManager.disconnectAsync();
 ```
 
 ## Compatibility
@@ -141,11 +131,11 @@ Unfortunately there is one "gotcha" as the desk won't accept any command send to
 We can write basically anything as desk handles incorrect input pretty well. Therefore I implemented so called `preflight` request which sends code consisting of `0000`.
 
 ## TODO
-- Inches
-- Implement async properly
-- Cover code with tests
-- Add documentation on API
-- Add option to set desk offset
+[] Inches
+[x] Implement async properly
+[] Cover code with tests
+[x] Add documentation on API
+[] Add option to set desk offset
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
