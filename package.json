@@ -9,7 +9,9 @@
   "scripts": {
     "build": "rollup -c ./rollup.config.js",
     "dev": "rollup -w -c ./rollup.config.js",
-    "test": "jest"
+    "test": "jest",
+    "testDev": "jest --watch",
+    "coverage": "jest --watchAll --coverage"
   },
   "dependencies": {
     "@abandonware/noble": "abandonware/noble"
