@@ -11,14 +11,9 @@
     "dev": "rollup -w -c ./rollup.config.js",
     "test": "jest"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pfilipp/idasen-controller.git"
+  "dependencies": {
+    "@abandonware/noble": "abandonware/noble"
   },
-  "bugs": {
-    "url": "https://github.com/pfilipp/idasen-controller/issues"
-  },
-  "homepage": "https://github.com/pfilipp/idasen-controller#readme",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^15.0.0",
     "@rollup/plugin-json": "^4.1.0",
@@ -35,7 +30,15 @@
     "eslint-plugin-standard": "^4.0.1",
     "rollup-plugin-peer-deps-external": "^2.2.3"
   },
-  "dependencies": {
-    "@abandonware/noble": "abandonware/noble"
-  }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pfilipp/idasen-controller.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pfilipp/idasen-controller/issues"
+  },
+  "homepage": "https://github.com/pfilipp/idasen-controller#readme",
+  "keywords": [
+    "idasen", "ikea", "desk", "standing desk", "bluetooth", "noble"
+  ]
 }
