@@ -22,6 +22,16 @@ describe('HeightConverter', () => {
     expect(resultValue).toEqual(expectedValue);
   });
 
+  it('should convert dec to hex', () => {
+    // given
+    const givenValue = RAW_MAX_HEIGHT - DESK_OFFSET;
+    const expectedValue = '1964';
+    // when
+    const resultValue = decimalToHexString(givenValue);
+    // then
+    expect(resultValue).toEqual(expectedValue);
+  });
+
   it('should return hex representation of height', () => {
     // given
     const givenValue = 1328;
@@ -41,5 +51,12 @@ describe('HeightConverter', () => {
     // then
     expect(resultValue).toEqual(expectedValue);
   });
-  //30 05 === 1328 == 7528
 });
+
+const decimalToHexString = (number) => {
+  let hexString = number.toString(16).toUpperCase();
+  while(hexString.length <= 3){
+    hexString = "0" + hexString;
+  }
+  return hexString;
+}
