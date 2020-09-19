@@ -141,11 +141,11 @@ Unfortunately there is one "gotcha" as the desk won't accept any command send to
 We can write basically anything as desk handles incorrect input pretty well. Therefore I implemented so called `preflight` request which sends code consisting of `0000`.
 
 ## TODO
-[] Inches
-[x] Implement async properly
-[] Cover code with tests
-[x] Add documentation on API
-[] Add option to set desk offset
+- [ ] Inches
+- [x] Implement async properly
+- [ ] Cover code with tests
+- [x] Add documentation on API
+- [ ] Add option to set desk offset
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
