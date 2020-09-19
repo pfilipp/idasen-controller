@@ -1,20 +1,20 @@
 {
   "name": "idasen-controller",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Package wrapping simple controls of Idasen IKEA desk.",
+  "author": "Piotr Filipp",
+  "license": "MIT",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
   "scripts": {
     "build": "rollup -c ./rollup.config.js",
     "dev": "rollup -w -c ./rollup.config.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pfilipp/idasen-controller.git"
   },
-  "author": "Piotr Filipp",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/pfilipp/idasen-controller/issues"
   },
@@ -24,6 +24,8 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@types/jest": "^26.0.14",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "jest": "^26.4.2",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.9.0",
     "eslint-config-standard": "^14.1.1",
