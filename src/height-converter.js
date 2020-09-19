@@ -26,6 +26,13 @@ export class HeightConverter {
   toMilimeters = (height) => {
     return height * 100;
   }
+
+  toHexReversed = (height) => {
+    return heightConverter
+      .getHexRepresentation(heightConverter
+        .getAbsoluteHeight(heightConverter
+          .toMilimeters(height)));
+  }
 };
 
 const decimalToHexString = (number) => {

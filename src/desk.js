@@ -4,7 +4,7 @@ import { sleep } from './helpers';
 
 const BufferFrom = Buffer.from;
 
-const PREFLIGHT_TIME_DURATION = 100;
+const PREFLIGHT_TIME_DURATION = 200;
 const MOVE_TIME_DURATION = 500;
 
 export class Desk {
@@ -21,55 +21,54 @@ export class Desk {
     this[name] = characteristic;
   }
 
-  moveUp = async () => {
+  setCustomPreflight = (preflightTimeDuration) => {
+    this.preflightTimeDuration = preflightTimeDuration;
+  }
+
+  moveUpAsync = async () => {
     await this.moveCharacteristic.writeAsync(new BufferFrom(CODES.up, 'hex'), false);
     // TODO: add check for speed to resolve?
   }
 
-  moveDown = async () => {
+  moveDownAsync = async () => {
     await this.moveCharacteristic.writeAsync(new BufferFrom(CODES.down, 'hex'), false);
     // TODO: add check for speed to resolve?
   }
 
-  preflightRequest = async () => {
-    console.log('starting preflight');
+  preflightRequestAsync = async () => {
     await this.moveCharacteristic.writeAsync(new BufferFrom(CODES.preflight, 'hex'), false);
-    await sleep(PREFLIGHT_TIME_DURATION);
-    console.log('ending preflight');
+    await sleep(this.preflightTimeDuration || PREFLIGHT_TIME_DURATION);
   }
 
-  moveTo = async (requestedHeight) => {
-    const isMovingUp = await this.getCurrentHeightAsync() > requestedHeight;
-    const requestedHeightHex = heightConverter
-      .getHexRepresentation(heightConverter
-        .getAbsoluteHeight(heightConverter
-          .toMilimeters(requestedHeight)));
+  moveToAsync = async (requestedHeight) => {
+    const moveLoop = await this.getMoveLoop(requestedHeight);
+    await this.preflightRequestAsync();
+    return moveLoop();
+  }
 
-    const shouldStopMoving = isMovingUp
-      ? (current, requested) => current <= requested
-      : (current, requested) => current >= requested;
+  getMoveLoop = async (requestedHeight) => {
+    const shouldStopMoving = await this.getShouldStopMoving(requestedHeight);
 
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      await this.preflightRequest();
+    const requestedHeightHex = heightConverter.toHexReversed(requestedHeight);
+
+    return () => new Promise((resolve, reject) => {
       this.moveToIntervalId = setInterval(async () => {
         const currentHeight = await this.getCurrentHeightAsync();
         if (shouldStopMoving(currentHeight, requestedHeight)) {
           clearInterval(this.moveToIntervalId);
           resolve();
         }
-        console.log('start moving');
-        this.move(requestedHeightHex);
+        await this.moveAsync(requestedHeightHex);
       }, MOVE_TIME_DURATION);
     });
   }
 
-  stop = async () => {
+  stopAsync = async () => {
     clearInterval(this.moveToIntervalId);
     await this.moveCharacteristic.writeAsync(new BufferFrom(CODES.stop, 'hex'), false);
   }
 
-  move = async (requestedHeight) => {
+  moveAsync = async (requestedHeight) => {
     const heightForTransmission = new BufferFrom(requestedHeight, 'hex');
     await this.moveToCharacteristic.writeAsync(heightForTransmission, false);
   }
@@ -87,8 +86,15 @@ export class Desk {
     return height;
   }
 
-  disconnect = async () => {
+  disconnectAsync = async () => {
     await this.peripheral.disconnectAsync();
     console.log('\nDesk disconnected');
+  }
+
+  getShouldStopMoving = async (requestedHeight) => {
+    const isMovingUp = await this.getCurrentHeightAsync() > requestedHeight;
+    return isMovingUp
+      ? (current, requested) => current <= requested
+      : (current, requested) => current >= requested;
   }
 };

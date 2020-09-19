@@ -1,6 +1,6 @@
 {
   "name": "idasen-controller",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Package wrapping simple controls of Idasen IKEA desk.",
   "author": "Piotr Filipp",
   "license": "MIT",
@@ -39,6 +39,11 @@
   },
   "homepage": "https://github.com/pfilipp/idasen-controller#readme",
   "keywords": [
-    "idasen", "ikea", "desk", "standing desk", "bluetooth", "noble"
+    "idasen",
+    "ikea",
+    "desk",
+    "standing desk",
+    "bluetooth",
+    "noble"
   ]
 }

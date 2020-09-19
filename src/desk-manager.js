@@ -59,13 +59,15 @@ class DeskManager {
   }
 
   disconnectAsync = async () => {
-    await this.disconnect();
+    if (this.desk) {
+      await this.desk.disconnectAsync();
+    }
     this.deskAddress = null;
     this.desk = null;
     return 'success';
   }
 
-  getCharacteristics = async (desk) => {
+  getCharacteristicsAsync = async (desk) => {
     const { characteristics } = await desk.discoverAllServicesAndCharacteristicsAsync();
     return characteristics;
   }
@@ -108,7 +110,7 @@ class DeskManager {
       this.desk = new Desk(peripheral);
       await this.desk.peripheral.connectAsync();
 
-      const characteristics = await this.getCharacteristics(this.desk.peripheral);
+      const characteristics = await this.getCharacteristicsAsync(this.desk.peripheral);
       this.setCharacteristics(this.desk, characteristics);
       this.deskReadyPromiseResolve();
 
@@ -121,12 +123,6 @@ class DeskManager {
     desk.setCharacteristic('moveCharacteristic', deskHelpers.getMoveCharacteristic(characteristics));
     desk.setCharacteristic('heightCharacteristic', deskHelpers.getHeightCharacteristic(characteristics));
     desk.setCharacteristic('moveToCharacteristic', deskHelpers.getMoveToCharacteristic(characteristics));
-  }
-
-  disconnect = async () => {
-    if (this.desk) {
-      await this.desk.disconnect();
-    }
   }
 };
 
