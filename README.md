@@ -5,6 +5,11 @@
 
 Wrapper exposing simple API to control IKEA Idasen desk.
 
+The main idea was to create something as simple as possible to serve as nice entry point for some other projects.
+Therefore you won't find here any timer functions or local storage for settings etc.
+
+If you want some more advanced stuff you can check my [other project](https://github.com/pfilipp/idasen-rest-api) - very under development. It aims at creating simple REST Api to send commands to desk.
+
 ## Installation
 
 Use the package manager [npm](https://www.npmjs.com)
