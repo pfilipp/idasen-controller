@@ -1,7 +1,7 @@
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import json from '@rollup/plugin-json';
-import peerDeps from 'rollup-plugin-peer-deps-external';
+import resolve from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
+import json from '@rollup/plugin-json'
+import peerDeps from 'rollup-plugin-peer-deps-external'
 
 export default [
   {
@@ -21,9 +21,10 @@ export default [
       peerDeps(),
       resolve({
         exclude: 'node_modules',
-        extensions: '.js'}),
+        extensions: '.js'
+      }),
       json(),
-      commonjs({exclude: "node_modules"}),
+      commonjs({ exclude: 'node_modules' })
     ]
   }
-];
+]
