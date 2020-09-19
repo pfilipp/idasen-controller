@@ -1,6 +1,6 @@
-import {DESK_OFFSET} from "./desk-constants";
+import { DESK_OFFSET } from './desk-constants';
 
-export class HeightConverter{
+export class HeightConverter {
   getAbsoluteHeight = (relativeHeight) => {
     return relativeHeight - DESK_OFFSET;
   }
@@ -10,7 +10,7 @@ export class HeightConverter{
   }
 
   getHexRepresentation = (absoluteHeight) => {
-    const hexString = decimalToHexString(absoluteHeight)
+    const hexString = decimalToHexString(absoluteHeight);
     const reversedBitHexString = reverseBitPairs(hexString);
     return reversedBitHexString;
   };
@@ -30,14 +30,14 @@ export class HeightConverter{
 
 const decimalToHexString = (number) => {
   let hexString = number.toString(16).toUpperCase();
-  while(hexString.length <= 3){
-    hexString = "0" + hexString;
+  while (hexString.length <= 3) {
+    hexString = '0' + hexString;
   }
   return hexString;
-}
+};
 
 const reverseBitPairs = (hexString) => {
-  return hexString.substring(2) + hexString.substring(0,2);
-}
+  return hexString.substring(2) + hexString.substring(0, 2);
+};
 
 export const heightConverter = new HeightConverter();

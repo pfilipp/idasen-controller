@@ -1,1 +1,1 @@
-export {deskManager} from "./src/desk-manager";
+export { deskManager } from './src/desk-manager';
