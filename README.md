@@ -140,12 +140,8 @@ For example if we want the desk to move to 75cm but we are already at 74.5 it wi
 Unfortunately there is one "gotcha" as the desk won't accept any command send to "precise" `Characteristic` unless we first write to "step" `Characteristic`. 
 We can write basically anything as desk handles incorrect input pretty well. Therefore I implemented so called `preflight` request which sends code consisting of `0000`.
 
-## TODO
-- [ ] Inches
-- [x] Implement async properly
-- [ ] Cover code with tests
-- [x] Add documentation on API
-- [ ] Add option to set desk offset
+## [TODO](https://github.com/pfilipp/idasen-controller/projects/1)
+
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
