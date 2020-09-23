@@ -20,13 +20,18 @@ class DeskManager {
 
     this.setOnStateChangeHandler();
     this.setOnDiscoverHandler();
-    this.isNobleReady = new Promise((resolve, reject) => {
-      this.nobleReadyPromiseResolve = resolve;
-    });
-    this.isDeskReady = new Promise((resolve, reject) => {
-      this.deskReadyPromiseResolve = resolve;
-    });
+
+    this.isNobleReady = this.createNoblePromise();
+    this.isDeskReady = this.createDeskPromise();
   }
+
+  createNoblePromise = () => new Promise((resolve, reject) => {
+    this.nobleReadyPromiseResolve = resolve;
+  });
+
+  createDeskPromise = () => new Promise((resolve, reject) => {
+    this.deskReadyPromiseResolve = resolve;
+  });
 
   scanAsync = async () => {
     await this.isNobleReady;
@@ -96,6 +101,17 @@ class DeskManager {
     });
   }
 
+  setOnDisconnectHandler = () => {
+    this.desk.peripheral.once('disconnect', () => {
+      console.log('disconnected');
+      this.desk = null;
+      this.discoveredPeripherals = [];
+      this.isDeskReady = this.createDeskPromise();
+      this.state = managerStateEnum.CONNECTING;
+      noble.startScanningAsync([], true);
+    });
+  }
+
   handleScanning = (peripheral) => {
     if (deskHelpers.shouldPush(this.discoveredPeripherals, peripheral)) {
       this.discoveredPeripherals
@@ -113,6 +129,7 @@ class DeskManager {
       const characteristics = await this.getCharacteristicsAsync(this.desk.peripheral);
       this.setCharacteristics(this.desk, characteristics);
       this.deskReadyPromiseResolve();
+      this.setOnDisconnectHandler();
 
       this.state = managerStateEnum.IDLE;
     }
