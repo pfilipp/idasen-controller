@@ -1,6 +1,6 @@
 import { CODES } from './desk-constants';
 import { heightConverter } from './height-converter';
-import { sleep } from './helpers';
+import { deskHelpers, sleep } from './helpers';
 
 const BufferFrom = Buffer.from;
 
@@ -17,12 +17,33 @@ export class Desk {
     this.moveToIntervalId = null;
   }
 
+  connect = async () => {
+    await this.peripheral.connectAsync();
+  }
+
+  init = async () => {
+    const characteristics = await this.getCharacteristicsAsync(this.peripheral);
+    this.setCharacteristics(characteristics);
+  }
+
   setCharacteristic = (name, characteristic) => {
     this[name] = characteristic;
   }
 
   setCustomPreflight = (preflightTimeDuration) => {
     this.preflightTimeDuration = preflightTimeDuration;
+  }
+
+  getCharacteristicsAsync = async (peripheral) => {
+    const { characteristics } = await peripheral.discoverAllServicesAndCharacteristicsAsync();
+    return characteristics;
+  }
+
+  setCharacteristics = (characteristics) => {
+    console.log('settings characteristics');
+    this.setCharacteristic('moveCharacteristic', deskHelpers.getMoveCharacteristic(characteristics));
+    this.setCharacteristic('heightCharacteristic', deskHelpers.getHeightCharacteristic(characteristics));
+    this.setCharacteristic('moveToCharacteristic', deskHelpers.getMoveToCharacteristic(characteristics));
   }
 
   moveUpAsync = async () => {
