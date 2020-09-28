@@ -1,8 +1,10 @@
 import { Desk } from './desk';
+import { DeskController } from './desk-controller';
 
 export class DeskManager {
   constructor (bluetoothAdapter) {
     this.desk = null;
+    this.deskController = null;
     this.deskAddress = null;
     this.discoveredPeripherals = [];
     this.bluetoothAdapter = bluetoothAdapter;
@@ -27,6 +29,8 @@ export class DeskManager {
     await this.desk.connect();
     await this.desk.init();
 
+    this.deskController = new DeskController(this.desk);
+
     this.deskReadyPromiseResolve();
     this.setOnDisconnectHandler();
 
@@ -50,6 +54,7 @@ export class DeskManager {
     this.desk.peripheral.once('disconnect', () => {
       console.log('disconnected');
       this.desk = null;
+      this.deskController = null;
       this.discoveredPeripherals = [];
       this.isDeskReady = this.createDeskPromise();
 
