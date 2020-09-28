@@ -1,6 +1,6 @@
 import noble from '@abandonware/noble';
-import { deskHelpers } from '../helpers';
-import { ADAPTER_EVENTS, STATES } from './constants';
+import { deskHelpers } from '../desk/desk-helpers';
+import { ADAPTER_EVENTS, STATES } from '../shared/constants';
 
 const SCANNING_TIME_DURATION = 4000;
 
@@ -64,6 +64,7 @@ class BluetoothAdapter {
 
   createFindDeviceHandler = (deskAddress) => {
     return async (peripheral) => {
+      console.log('peripheral discovered in finding mode');
       if (peripheral.address === deskAddress) {
         this.scan.stop();
         this.deskFoundPromiseResolve(peripheral);

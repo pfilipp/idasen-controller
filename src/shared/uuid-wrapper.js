@@ -1,3 +1,4 @@
+
 export class UUIDWrapper {
   constructor (uuid) {
     this._uuid = uuid;

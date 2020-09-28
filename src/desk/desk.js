@@ -1,5 +1,5 @@
 import { heightConverter } from './height-converter';
-import { deskHelpers } from './helpers';
+import { deskHelpers } from './desk-helpers';
 
 export class Desk {
   constructor (peripheral) {

@@ -1,6 +1,6 @@
 import { CODES } from './desk-constants';
 import { heightConverter } from './height-converter';
-import { sleep } from './helpers';
+import { sleep } from '../shared/helpers';
 
 const BufferFrom = Buffer.from;
 
