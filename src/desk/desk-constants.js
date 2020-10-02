@@ -1,4 +1,4 @@
-import { UUIDWrapper } from './uuid-wrapper';
+import { UUIDWrapper } from '../shared/uuid-wrapper';
 
 export const DESK_UUID = '3a48ee8fb68f4cb6833ec561dbf9bac4';
 

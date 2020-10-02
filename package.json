@@ -1,6 +1,6 @@
 {
   "name": "idasen-controller",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Package wrapping simple controls of Idasen IKEA desk.",
   "author": "Piotr Filipp",
   "license": "MIT",
