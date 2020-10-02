@@ -6,10 +6,16 @@ const BufferFrom = Buffer.from;
 
 const PREFLIGHT_TIME_DURATION = 200;
 const MOVE_TIME_DURATION = 500;
+const DEFAULT_HEIGHT_TOLERANCE_THRESHOLD = 0.5;
 
 export class DeskController {
   constructor (desk) {
     this.desk = desk;
+    this.heightToleranceThreshold = DEFAULT_HEIGHT_TOLERANCE_THRESHOLD;
+  }
+
+  setHeightToleranceThreshold = (heightToleranceThreshold) => {
+    this.heightToleranceThreshold = heightToleranceThreshold;
   }
 
   moveUpAsync = async () => {
@@ -30,7 +36,7 @@ export class DeskController {
   moveToAsync = async (requestedHeight) => {
     const moveLoop = await this.getMoveLoop(requestedHeight);
     await this.preflightRequestAsync();
-    return moveLoop();
+    return await moveLoop();
   }
 
   getMoveLoop = async (requestedHeight) => {
@@ -38,7 +44,7 @@ export class DeskController {
 
     const requestedHeightHex = heightConverter.toHexReversed(requestedHeight);
 
-    return () => new Promise((resolve, reject) => {
+    return async () => new Promise((resolve, reject) => {
       this.moveToIntervalId = setInterval(async () => {
         const currentHeight = await this.desk.getCurrentHeightAsync();
         if (shouldStopMoving(currentHeight, requestedHeight)) {
@@ -63,7 +69,21 @@ export class DeskController {
   getShouldStopMoving = async (requestedHeight) => {
     const isMovingUp = await this.desk.getCurrentHeightAsync() > requestedHeight;
     return isMovingUp
-      ? (current, requested) => current <= requested
-      : (current, requested) => current >= requested;
+      ? this.shouldStopMovingUp
+      : this.shouldStopMovingDown;
+  }
+
+  shouldStopMovingUp = (current, requested) => {
+    if (this.isDifferenceInThreshold(current, requested)) return true;
+    return current < requested;
+  }
+
+  shouldStopMovingDown = (current, requested) => {
+    if (this.isDifferenceInThreshold(current, requested)) return true;
+    return current >= requested;
+  };
+
+  isDifferenceInThreshold (current, requested) {
+    return Math.abs(current - requested) < this.heightToleranceThreshold;
   }
 };

@@ -8,6 +8,7 @@ export class DeskManager {
     this.deskAddress = null;
     this.discoveredPeripherals = [];
     this.bluetoothAdapter = bluetoothAdapter;
+    this.customDisconnectHandlers = [];
 
     this.isDeskReady = this.createDeskPromise();
   }
@@ -33,6 +34,7 @@ export class DeskManager {
 
     this.deskReadyPromiseResolve();
     this.setOnDisconnectHandler();
+    this.setCustomDisconnectHandlers();
 
     const result = this.desk
       ? 'success'
@@ -60,5 +62,17 @@ export class DeskManager {
 
       this.connectAsync(this.deskAddress);
     });
+  }
+
+  setCustomDisconnectHandlers = () => {
+    this.customDisconnectHandlers.forEach((disconnectHandler) => {
+      this.desk.peripheral.once('disconnect', () => {
+        disconnectHandler();
+      });
+    });
+  }
+
+  addCustomDisconnectHandler = (callback) => {
+    this.customDisconnectHandlers.push(callback);
   }
 };
