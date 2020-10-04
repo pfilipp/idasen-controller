@@ -1,21 +1,18 @@
 import { CODES } from './desk-constants';
 import { heightConverter } from './height-converter';
 import { sleep } from '../shared/helpers';
+import { storeKeys } from '../store-keys';
 
 const BufferFrom = Buffer.from;
 
-const PREFLIGHT_TIME_DURATION = 200;
-const MOVE_TIME_DURATION = 500;
-const DEFAULT_HEIGHT_TOLERANCE_THRESHOLD = 0.5;
-
 export class DeskController {
-  constructor (desk) {
+  constructor (desk, store) {
     this.desk = desk;
-    this.heightToleranceThreshold = DEFAULT_HEIGHT_TOLERANCE_THRESHOLD;
+    this.store = store;
   }
 
   setHeightToleranceThreshold = (heightToleranceThreshold) => {
-    this.heightToleranceThreshold = heightToleranceThreshold;
+    this.store.addWithOverwrite(storeKeys.DEFAULT_HEIGHT_TOLERANCE_THRESHOLD, heightToleranceThreshold);
   }
 
   moveUpAsync = async () => {
@@ -29,8 +26,10 @@ export class DeskController {
   }
 
   preflightRequestAsync = async () => {
+    const preflightTimeDuration = this.store.get(storeKeys.PREFLIGHT_TIME_DURATION);
+
     await this.desk.characteristics.move.writeAsync(new BufferFrom(CODES.preflight, 'hex'), false);
-    await sleep(this.preflightTimeDuration || PREFLIGHT_TIME_DURATION);
+    await sleep(this.preflightTimeDuration || preflightTimeDuration);
   }
 
   moveToAsync = async (requestedHeight) => {
@@ -41,7 +40,7 @@ export class DeskController {
 
   getMoveLoop = async (requestedHeight) => {
     const shouldStopMoving = await this.getShouldStopMoving(requestedHeight);
-
+    const moveTimeDuration = this.store.get(storeKeys.MOVE_TIME_DURATION);
     const requestedHeightHex = heightConverter.toHexReversed(requestedHeight);
 
     return async () => new Promise((resolve, reject) => {
@@ -52,7 +51,7 @@ export class DeskController {
           resolve();
         }
         await this.moveAsync(requestedHeightHex);
-      }, MOVE_TIME_DURATION);
+      }, moveTimeDuration);
     });
   }
 
@@ -84,6 +83,7 @@ export class DeskController {
   };
 
   isDifferenceInThreshold (current, requested) {
-    return Math.abs(current - requested) < this.heightToleranceThreshold;
+    const heightToleranceThreshold = this.store.get(storeKeys.DEFAULT_HEIGHT_TOLERANCE_THRESHOLD);
+    return Math.abs(current - requested) < heightToleranceThreshold;
   }
 };

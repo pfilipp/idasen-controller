@@ -27,7 +27,7 @@ export class Desk {
     this.characteristics[name] = characteristic;
   }
 
-  setCustomPreflight = (preflightTimeDuration) => {
+  setCustomPreflightDuration = (preflightTimeDuration) => {
     this.preflightTimeDuration = preflightTimeDuration;
   }
 

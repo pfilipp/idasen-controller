@@ -1,12 +1,19 @@
-import { DESK_OFFSET } from './desk-constants';
+import { store } from '../store';
+import { storeKeys } from '../store-keys';
 
 export class HeightConverter {
+  constructor (store) {
+    this.store = store;
+  }
+
   getAbsoluteHeight = (relativeHeight) => {
-    return relativeHeight - DESK_OFFSET;
+    const deskOffset = this.store.get(storeKeys.DESK_OFFSET_HEIGHT);
+    return relativeHeight - deskOffset;
   }
 
   getRelativeHeight = (absoluteHeight) => {
-    return absoluteHeight + DESK_OFFSET;
+    const deskOffset = this.store.get(storeKeys.DESK_OFFSET_HEIGHT);
+    return absoluteHeight + deskOffset;
   }
 
   getHexRepresentation = (absoluteHeight) => {
@@ -47,4 +54,4 @@ const reverseBitPairs = (hexString) => {
   return hexString.substring(2) + hexString.substring(0, 2);
 };
 
-export const heightConverter = new HeightConverter();
+export const heightConverter = new HeightConverter(store);

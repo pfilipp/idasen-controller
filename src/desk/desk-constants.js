@@ -2,10 +2,6 @@ import { UUIDWrapper } from '../shared/uuid-wrapper';
 
 export const DESK_UUID = '3a48ee8fb68f4cb6833ec561dbf9bac4';
 
-export const RAW_MAX_HEIGHT = 12700;
-export const RAW_MIN_HEIGHT = 6200;
-export const DESK_OFFSET = 6200;
-
 export const CODES = {
   up: '4700',
   down: '4600',

@@ -1,3 +1,4 @@
+import { store } from '../store';
 import { Desk } from './desk';
 import { DeskController } from './desk-controller';
 
@@ -30,7 +31,7 @@ export class DeskManager {
     await this.desk.connect();
     await this.desk.init();
 
-    this.deskController = new DeskController(this.desk);
+    this.deskController = new DeskController(this.desk, store);
 
     this.deskReadyPromiseResolve();
     this.setOnDisconnectHandler();
