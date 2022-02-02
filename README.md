@@ -1,6 +1,9 @@
 [![NPM](https://nodei.co/npm/idasen-controller.png)](https://npmjs.org/package/idasen-controller) 
 [![js-standard-style](https://cdn.rawgit.com/standard/standard/master/badge.svg)](http://standardjs.com)
 
+# DISCLAIMER
+Please note that I no longer have idasen desk, therefore I can no longer work on this project. Keeping it up if anyone would like to fork or just copy-paste some parts :) 
+
 # idasen-controller
 
 Wrapper exposing simple API to control IKEA Idasen desk.
