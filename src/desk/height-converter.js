@@ -1,5 +1,5 @@
-import { store } from '../store';
-import { storeKeys } from '../store-keys';
+import { store } from '../store.js';
+import { storeKeys } from '../store-keys.js';
 
 export class HeightConverter {
   constructor (store) {
@@ -31,7 +31,7 @@ export class HeightConverter {
   }
 
   toMilimeters = (height) => {
-    return height * 100;
+    return height * 10000;
   }
 
   toHexReversed = (height) => {

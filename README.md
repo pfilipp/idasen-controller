@@ -1,12 +1,29 @@
 [![NPM](https://nodei.co/npm/idasen-controller.png)](https://npmjs.org/package/idasen-controller) 
 [![js-standard-style](https://cdn.rawgit.com/standard/standard/master/badge.svg)](http://standardjs.com)
 
-# DISCLAIMER
-Please note that I no longer have idasen desk, therefore I can no longer work on this project. Keeping it up if anyone would like to fork or just copy-paste some parts :) 
-
 # idasen-controller
 
-Wrapper exposing simple API to control IKEA Idasen desk.
+Wrapper exposing simple API to control IKEA Idasen desk with a powerful CLI tool.
+
+## ⚡ Version 1.4.0 - Critical Fixes & New Features
+
+This updated version includes **critical bug fixes** and new features:
+
+### 🐛 Critical Bug Fixes
+- **Fixed movement direction logic** - Desk now correctly identifies whether it's moving up or down
+- **Fixed stop conditions** - Desk now stops at the correct target height
+- **Fixed stop command** - Now sends both stop signals for reliable stopping
+- **Added height validation** - Prevents dangerous movements outside safe range (0.62m - 1.27m)
+- **Added movement state lock** - Prevents concurrent movement operations that could conflict
+
+### ✨ New Features
+- **Speed monitoring** - Reads desk movement speed for more reliable target detection
+- **Wakeup command** - Automatically wakes desk controller on connect (DPG1C compatibility)
+- **CLI tool** - Full-featured command-line interface for manual desk control
+- **Position presets** - Save and recall favorite desk positions
+- **Real-time monitoring** - Watch desk height changes in real-time
+
+These fixes make the controller **significantly more reliable** and safer to use.
 
 The main idea was to create something as simple as possible to serve as nice entry point for some other projects.
 Therefore you won't find here any timer functions or local storage for settings etc.
@@ -14,6 +31,8 @@ Therefore you won't find here any timer functions or local storage for settings 
 If you want some more advanced stuff you can check my [other project](https://github.com/pfilipp/idasen-rest-api) - very under development. It aims at creating simple REST Api to send commands to desk.
 
 ## Installation
+
+### As a Library
 
 Use the package manager [npm](https://www.npmjs.com)
 
@@ -27,7 +46,107 @@ or [yarn](https://yarnpkg.com)
 yarn add idasen-controller
 ```
 
-## Usage
+### As a CLI Tool
+
+Install globally to use the `idasen` command:
+
+```bash
+npm install -g idasen-controller
+```
+
+Or use without installing:
+
+```bash
+npx idasen-controller <command>
+```
+
+## CLI Usage
+
+
+The package now includes a powerful CLI tool for controlling your desk directly from the terminal.
+
+### Quick Start
+
+1. **Scan for your desk:**
+```bash
+idasen scan
+```
+
+2. **Connect and save your desk address:**
+```bash
+idasen connect <MAC_ADDRESS>
+```
+
+3. **Control your desk:**
+```bash
+# Get current status
+idasen status
+
+# Move to specific height (in cm)
+idasen move 75
+
+# Move up/down
+idasen up
+idasen down
+
+# Stop movement
+idasen stop
+
+# Monitor height in real-time
+idasen monitor
+```
+
+### CLI Commands
+
+#### `idasen scan`
+Scan for available Idasen desks nearby.
+
+#### `idasen connect <address>`
+Connect to a desk and save its MAC address for future use.
+
+#### `idasen status [-a <address>]`
+Display current desk height and movement speed.
+
+#### `idasen move <height> [-a <address>]`
+Move desk to a specific height. Accepts values in centimeters (e.g., `75`) or meters (e.g., `0.75`).
+
+#### `idasen up [-a <address>]`
+Start moving desk upward (continues until stopped).
+
+#### `idasen down [-a <address>]`
+Start moving desk downward (continues until stopped).
+
+#### `idasen stop [-a <address>]`
+Stop desk movement immediately.
+
+#### `idasen monitor [-a <address>] [-i <interval>]`
+Monitor desk height in real-time. Press Ctrl+C to stop.
+- `-i, --interval`: Update interval in milliseconds (default: 500)
+
+#### Position Presets
+
+Save and recall your favorite desk positions:
+
+```bash
+# Save a preset
+idasen preset add sitting 75
+idasen preset add standing 120
+
+# List all presets
+idasen preset list
+
+# Move to a preset
+idasen preset goto sitting
+
+# Remove a preset
+idasen preset remove sitting
+```
+
+### Configuration
+
+The CLI stores your desk's MAC address and presets in `~/.idasen/config.json`. After the first connection, you don't need to specify the address again.
+
+## Library Usage
 Once you import idasenController you will find `deskManager` within.
 
 ```javascript
@@ -101,6 +220,28 @@ Return current height in centimeters
 
 ```javascript
 const currentHeight = await deskManager.desk.getCurrentHeightAsync();
+```
+
+### Get speed
+Return current movement speed in meters per second
+
+```javascript
+const speed = await deskManager.desk.getCurrentSpeedAsync();
+```
+
+### Get height and speed together
+Return both height and speed in a single call (more efficient)
+
+```javascript
+const { height, speed } = await deskManager.desk.getCurrentHeightAndSpeedAsync();
+console.log(`Height: ${height} cm, Speed: ${speed * 100} cm/s`);
+```
+
+### Wakeup command
+Wake up the desk controller (automatically called on connect)
+
+```javascript
+await deskManager.desk.wakeupAsync();
 ```
 
 ### Disconnect

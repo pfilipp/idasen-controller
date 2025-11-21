@@ -1,4 +1,4 @@
-import { CHARACTERISTICS } from './desk-constants';
+import { CHARACTERISTICS } from './desk-constants.js';
 
 class DeskHelpers {
   getHeightCharacteristic = (characteristics) => {
@@ -28,7 +28,11 @@ class DeskHelpers {
   }
 
   shouldPush = (currentItems, itemToPush) => {
-    if (!itemToPush.advertisement.localName) return false;
+    // Check if device has advertisement data
+    if (!itemToPush.advertisement) return false;
+    // Allow devices even without localName (they might still be connectable)
+    // if (!itemToPush.advertisement.localName) return false;
+    // Avoid duplicates
     if (currentItems.some((item) => item.uuid === itemToPush.uuid)) return false;
     return true;
   }

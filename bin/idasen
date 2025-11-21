@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+// Import the CLI module
+import '../src/cli/index.js';

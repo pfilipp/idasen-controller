@@ -1,6 +1,6 @@
-import { store } from '../store';
-import { Desk } from './desk';
-import { DeskController } from './desk-controller';
+import { store } from '../store.js';
+import { Desk } from './desk.js';
+import { DeskController } from './desk-controller.js';
 
 export class DeskManager {
   constructor (bluetoothAdapter) {
@@ -30,6 +30,7 @@ export class DeskManager {
 
     await this.desk.connect();
     await this.desk.init();
+    await this.desk.wakeupAsync(); // Wake up the desk controller
 
     this.deskController = new DeskController(this.desk, store);
 

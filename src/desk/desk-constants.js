@@ -1,4 +1,4 @@
-import { UUIDWrapper } from '../shared/uuid-wrapper';
+import { UUIDWrapper } from '../shared/uuid-wrapper.js';
 
 export const DESK_UUID = '3a48ee8fb68f4cb6833ec561dbf9bac4';
 
@@ -6,7 +6,9 @@ export const CODES = {
   up: '4700',
   down: '4600',
   preflight: '0000',
-  stop: 'FF00'
+  stop: 'FF00',
+  referenceInputStop: '0180',
+  wakeup: 'FE00'
 };
 
 export const SERVICES = {
